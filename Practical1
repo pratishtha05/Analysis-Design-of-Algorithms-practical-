@@ -1,0 +1,327 @@
+// PROGRAM 1: Peak Element
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+int peakElement1D(vector<int> arr, int n)
+{
+    int low = 0, high = n - 1;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+
+        if (arr[mid] < arr[mid - 1])
+        {
+            high = mid - 1;
+        }
+        else if (arr[mid] < arr[mid + 1])
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            return arr[mid];
+        }
+    }
+}
+
+
+
+int findMaxInColumn(int arr2[3][3], int rows, int col) {
+    int maxVal = INT_MIN;
+    int maxRow = 0;
+    for (int i = 0; i < rows; i++) {
+        if (arr2[i][col] > maxVal) {
+            maxVal = arr2[i][col];
+            maxRow = i;
+        }
+    }
+    return maxRow;
+}
+
+int peakElement2D(int arr2[3][3], int i, int j) {
+    int start = 0;
+    int end = j - 1;
+
+    while (start <= end) {
+        int mid = (start + end) / 2;
+
+        int maxRow = findMaxInColumn(arr2, i, mid);
+
+        if ((mid - 1 < 0 || arr2[maxRow][mid] > arr2[maxRow][mid - 1]) &&
+            (mid + 1 >= j || arr2[maxRow][mid] > arr2[maxRow][mid + 1]) &&
+            (maxRow - 1 < 0 || arr2[maxRow][mid] > arr2[maxRow - 1][mid]) &&
+            (maxRow + 1 >= i || arr2[maxRow][mid] > arr2[maxRow + 1][mid])) {
+            return arr2[maxRow][mid];
+        }
+
+        if (mid - 1 >= 0 && arr2[maxRow][mid - 1] > arr2[maxRow][mid]) {
+            end = mid - 1;
+        } else {
+            start = mid + 1;
+        }
+    } 
+    return -1; 
+}
+
+int main() {
+    int arr2[3][3] = {{1, 2, 3}, {10, 5, 9}, {6, 7, 5}};
+    int rows = 3, cols = 3;
+    cout << "Peak element: " << peakElement2D(arr2, rows, cols) << endl;
+
+    return 0;
+}
+
+
+
+// PROGRAM 2: Magic Square
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void magicSquare(int matrix[20][20], int n){
+    int p=0;
+    int q =n/2;
+    matrix[0][n/2]=1;
+
+    
+    for (int i = 2; i <= n * n; i++)
+    {
+        int new_p = p - 1; 
+        int new_q = q - 1;
+
+        if (new_p < 0) {
+            new_p = n - 1; 
+        }
+
+        
+        if (new_q < 0) {
+            new_q = n-1; 
+        }
+
+        if (matrix[new_p][new_q] == 0) {
+            
+            p = new_p;
+            q = new_q;
+        } else {
+            
+            p++;
+            if (p >= n) {
+                p = 0; 
+            }
+        }
+    matrix[p][q] = i;
+
+        
+    }
+    cout<<"Magic Square generated."<<endl;
+}
+
+
+
+int main()
+{
+    vector<vector<int>> v;
+    int n; 
+    cout<<"enter the value of n:"<<endl;
+    cin>> n;
+    int matrix[20][20];
+    //intialising the magic square
+    for(int i=0; i<n; i++){
+        for(int j=0;j<n;j++){
+            matrix[i][j]=0;
+        }
+    }
+
+    //creating the magic square
+    magicSquare(matrix,n);
+    for(int i=0; i<n; i++){
+        for(int j=0;j<n;j++){
+            cout<<matrix[i][j]<<"";
+        }
+        cout<<endl;
+    }
+
+
+    
+    
+    return 0;
+}
+
+
+
+// PROGRAM 3: Power calculation in O(logn)
+#include<iostream>
+using namespace std;
+
+int power(int a, int n){
+    if(n==0){
+        return 1;
+    }
+    int halfPower = power(a, n / 2);
+    if(n%2==0){
+        return halfPower * halfPower;
+    }
+    else {
+        return a * halfPower * halfPower;
+    }
+}
+
+int main(){
+    int a, n;
+    cout << "Enter the base (a): ";
+    cin >> a;
+    cout << "Enter the exponent (n): ";
+    cin >> n;
+
+    cout << a << "^" << n << " = " << power(a, n) << endl;
+
+
+    return 0;
+}
+
+
+
+// PROGRAM 4: Cosine Similarity
+#include <iostream>
+#include <fstream>
+#include<map>
+#include <set>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+
+int main(){
+
+    set<string> stopWords = {
+    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", 
+    "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", 
+    "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", 
+    "their", "theirs", "themselves", "what", "which", "who", "whom", "this", 
+    "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", 
+    "being", "have", "has", "had", "having", "do", "does", "did", "doing", 
+    "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", 
+    "while", "of", "at", "by", "for", "with", "about", "against", "between", 
+    "into", "through", "during", "before", "after", "above", "below", "to", 
+    "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", 
+    "further", "then", "once", "here", "there", "when", "where", "why", 
+    "how", "all", "any", "both", "each", "few", "more", "most", "other", 
+    "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", 
+    "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"
+    };
+
+    // set<char> punctuationMarks = {
+    // '.', ',', ';', ':', '!', '?', '-', '_', '(', ')', '[', ']', '{', '}', 
+    // '\'', '"', '/', '\\', '|', '@', '#', '$', '%', '^', '&', '*', '+', '=', 
+    // '<', '>', '~', '`'
+    // };
+
+    //making the dictionary
+    ifstream in("docA.txt");
+    string st;
+
+    map<int, string> dict;
+    int i = 1;
+
+    while (in >> st) { 
+        if (stopWords.count(st) == 0 ) {
+            dict[i] = st; 
+            i++;
+        }
+    }
+    in.close();
+    // printing dictionary  
+    cout<<"the dictionary:"<<endl;
+    for (const auto& it : dict) {
+        cout << it.first << ": " << it.second << endl;
+    }
+
+
+    // calculating freq for A
+    vector<int> wordsFreqA(dict.size(), 0);
+    ifstream inA("docA.txt");
+    string stA;
+
+    while (inA >> stA) {
+        
+            for (auto it = dict.begin(); it != dict.end(); it++) {
+                if (it->second == stA) {
+                    int index = it->first - 1; 
+                    wordsFreqA[index]++; 
+                    break;
+                }
+            }
+        
+    }
+    inA.close();
+    //printing freq vector A
+    cout<<"freq vector A:"<<endl;
+    for (int freq : wordsFreqA) {
+        cout << freq << " ";
+    }
+    cout << endl;
+
+    //calculating freq for B
+    vector<int> wordsFreqB(dict.size(), 0);
+    ifstream inB("docB.txt");
+    string stB;
+
+    while (inB >> stB) {
+        
+            for (auto it = dict.begin(); it != dict.end(); it++) {
+                if (it->second == stB) {
+                    int index = it->first - 1; 
+                    wordsFreqB[index]++; 
+                    break;
+                }
+            }
+        
+    }
+    inB.close();
+    //printing freq vector B
+    cout<<"freq vector B:"<<endl;
+    for (int freq : wordsFreqB) {
+        cout << freq << " ";
+    }
+    cout << endl;
+
+
+    // dot product
+    float dotA_B = 0;
+    for (int i = 0; i < dict.size(); i++) {
+        dotA_B += wordsFreqA[i] * wordsFreqB[i];
+    }
+    cout<<"dot product:"<<dotA_B<<endl;
+
+    // magnitudes
+    float modA = 0, modB = 0;
+    for (int i = 0; i < dict.size(); i++) {
+        modA += wordsFreqA[i] * wordsFreqA[i];
+        modB += wordsFreqB[i] * wordsFreqB[i];
+    }
+    cout<<"mag of a: "<<modA<<" "<<" mag of b: "<<modB<<endl;
+
+    cout<<"sqrt values:"<<endl;
+    modA = (sqrt(modA));
+    modB = (sqrt(modB));
+    cout<<"mag of a: "<<modA<<" "<<" mag of b: "<<modB<<endl;
+
+    float denom = modA * modB;
+
+    // calculating similarity
+    if (denom != 0) {
+        double similarity = dotA_B / denom;
+        
+        double similarityPercentage = similarity * 100;
+        cout << "Similarity Percentage: " << similarityPercentage << "%" << endl;
+    } else {
+        cout << "No similarity due to zero denominator." << endl;
+    }
+
+
+    return 0;
+}
+
+
