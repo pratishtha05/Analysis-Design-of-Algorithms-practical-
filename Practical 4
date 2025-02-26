@@ -1,0 +1,259 @@
+//max - min algorithm (simple and DAC)
+#include <iostream>
+using namespace std;
+
+void StraightMaxMin(int arr[], int n, int &max, int &min) {
+    max = min = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) max = arr[i];
+        if (arr[i] < min) min = arr[i];
+    }
+}
+
+void MaxMin(int arr[], int i, int j, int &max, int &min) {
+    if (i == j) { 
+        max = min = arr[i];
+        return;
+    }
+    if (i == j - 1) { 
+        if (arr[i] < arr[j]) {
+            max = arr[j];
+            min = arr[i];
+        } else {
+            max = arr[i];
+            min = arr[j];
+        }
+        return;
+    }
+    
+    int mid = (i + j) / 2;
+    int max1, min1;
+
+    MaxMin(arr, i, mid, max, min);
+    MaxMin(arr, mid + 1, j, max1, min1);
+
+    if (max < max1) max = max1;
+    if (min > min1) min = min1;
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of elements: ";
+    cin >> n;
+
+    int* arr = new int[n];
+    cout << "Enter the elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    int max1, min1;
+    StraightMaxMin(arr, n, max1, min1);
+    cout << "Straightforward Approach -> Max: " << max1 << ", Min: " << min1 << endl;
+
+    int max2, min2;
+    MaxMin(arr, 0, n - 1, max2, min2);
+    cout << "Divide & Conquer Approach -> Max: " << max2 << ", Min: " << min2 << endl;
+
+    delete[] arr;
+    return 0;
+}
+
+
+//quick sort: iterative and recursive (TC analysis)
+#include <iostream>
+#include <stack>
+using namespace std;
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSortRecursive(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSortRecursive(arr, low, pi - 1);
+        quickSortRecursive(arr, pi + 1, high);
+    }
+}
+
+void quickSortIterative(int arr[], int low, int high) {
+    stack<int> s;
+    s.push(low);
+    s.push(high);
+    while (!s.empty()) {
+        high = s.top(); s.pop();
+        low = s.top(); s.pop();
+        int pi = partition(arr, low, high);
+        if (pi - 1 > low) {
+            s.push(low);
+            s.push(pi - 1);
+        }
+        if (pi + 1 < high) {
+            s.push(pi + 1);
+            s.push(high);
+        }
+    }
+}
+
+int main() {
+    int arr[] = {10, 7, 8, 9, 1, 5};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    quickSortRecursive(arr, 0, n - 1);
+    cout << "Sorted array (Recursive): ";
+    for (int i = 0; i < n; i++) cout << arr[i] << " ";
+    cout << endl;
+
+    int arr2[] = {10, 7, 8, 9, 1, 5};
+    quickSortIterative(arr2, 0, n - 1);
+    cout << "Sorted array (Iterative): ";
+    for (int i = 0; i < n; i++) cout << arr2[i] << " ";
+    cout << endl;
+
+    return 0;
+}
+
+//to check whether point is inside a triangle or not
+#include <iostream>
+using namespace std;
+
+float area(float x1, float y1, float x2, float y2, float x3, float y3) {
+    float result = (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0;
+    return (result < 0) ? -result : result; 
+}
+
+bool isInside(float x1, float y1, float x2, float y2, float x3, float y3, float px, float py) {
+    float A = area(x1, y1, x2, y2, x3, y3);
+    float A1 = area(px, py, x2, y2, x3, y3);
+    float A2 = area(x1, y1, px, py, x3, y3);
+    float A3 = area(x1, y1, x2, y2, px, py);
+    
+    return (A == (A1 + A2 + A3)); 
+}
+
+int main() {
+    float x1 = 0, y1 = 0, x2 = 5, y2 = 0, x3 = 0, y3 = 5;
+    float px = 1, py = 1; 
+
+    if (isInside(x1, y1, x2, y2, x3, y3, px, py))
+        cout << "Point is inside the triangle\n";
+    else
+        cout << "Point is outside the triangle\n";
+
+    return 0;
+}
+
+//to find all possible triangles from given n points
+#include <iostream>
+using namespace std;
+
+struct Point {
+    int x, y;
+};
+
+bool collinear(Point a, Point b, Point c) {
+    return (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) == 0;
+}
+
+int main() {
+    int n;
+    cout << "Enter number of points: ";
+    cin >> n;
+
+    Point* points = new Point[n];
+
+    cout << "Enter " << n << " points (x y):\n";
+    for (int i = 0; i < n; i++) {
+        cin >> points[i].x >> points[i].y;
+    }
+
+    cout << "Possible triangles:\n";
+    for (int i = 0; i < n - 2; i++) {
+        for (int j = i + 1; j < n - 1; j++) {
+            for (int k = j + 1; k < n; k++) {
+                if (!collinear(points[i], points[j], points[k])) {
+                    cout << "(" << points[i].x << "," << points[i].y << ") - "
+                         << "(" << points[j].x << "," << points[j].y << ") - "
+                         << "(" << points[k].x << "," << points[k].y << ")\n";
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+//matrix multiplication
+#include <iostream>
+using namespace std;
+
+void conventionalMultiply(int A[2][2], int B[2][2], int C[2][2]) {
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            C[i][j] = 0;
+            for (int k = 0; k < 2; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+void divideAndConquerMultiply(int A[2][2], int B[2][2], int C[2][2]) {
+    C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0];
+    C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1];
+    C[1][0] = A[1][0] * B[0][0] + A[1][1] * B[1][0];
+    C[1][1] = A[1][0] * B[0][1] + A[1][1] * B[1][1];
+}
+
+void strassenMultiply(int A[2][2], int B[2][2], int C[2][2]) {
+    int M1 = (A[0][0] + A[1][1]) * (B[0][0] + B[1][1]);
+    int M2 = (A[1][0] + A[1][1]) * B[0][0];
+    int M3 = A[0][0] * (B[0][1] - B[1][1]);
+    int M4 = A[1][1] * (B[1][0] - B[0][0]);
+    int M5 = (A[0][0] + A[0][1]) * B[1][1];
+    int M6 = (A[1][0] - A[0][0]) * (B[0][0] + B[0][1]);
+    int M7 = (A[0][1] - A[1][1]) * (B[1][0] + B[1][1]);
+
+    C[0][0] = M1 + M4 - M5 + M7;
+    C[0][1] = M3 + M5;
+    C[1][0] = M2 + M4;
+    C[1][1] = M1 - M2 + M3 + M6;
+}
+
+void printMatrix(int C[2][2]) {
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            cout << C[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int A[2][2] = {{1, 2}, {3, 4}};
+    int B[2][2] = {{5, 6}, {7, 8}};
+    int C1[2][2] = {0}, C2[2][2] = {0}, C3[2][2] = {0};
+
+    conventionalMultiply(A, B, C1);
+    cout << "Conventional Multiplication:\n";
+    printMatrix(C1);
+
+    divideAndConquerMultiply(A, B, C2);
+    cout << "\nDivide and Conquer Multiplication:\n";
+    printMatrix(C2);
+
+    strassenMultiply(A, B, C3);
+    cout << "\nStrassen's Multiplication:\n";
+    printMatrix(C3);
+
+    return 0;
+}
