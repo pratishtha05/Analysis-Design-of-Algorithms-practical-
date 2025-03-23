@@ -30,7 +30,7 @@
 ---
 ---  
 
-2. <ins>AIM</ins>: Finding peak element in both 1D & 2D array.  
+2. <ins>AIM</ins>: Magic square   
    <ins>WORKING</ins>:  
    1. Start at the middle of the first row (p = 0, q = n/2).
       - Place 1 at this position.
@@ -54,7 +54,7 @@
 ---
 ---  
 
-3. <ins>AIM</ins>: Finding peak element in both 1D & 2D array.  
+3. <ins>AIM</ins>: Calculating a^n 
    <ins>WORKING</ins>:  
    The function power(a, n) calculates a^n efficiently using divide and conquer:
 
@@ -76,7 +76,7 @@
 ---
 ---  
 
-4. <ins>AIM</ins>: Calculate the cosine similarity between two text documents  
+4. <ins>AIM</ins>: Calculate the similarity between two text documents (cosine similarity)
    <ins>WORKING</ins>:
    The function power(a, n) calculates a^n efficiently using divide and conquer:
 
