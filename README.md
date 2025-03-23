@@ -54,7 +54,7 @@
 ---
 ---  
 
-3. <ins>AIM</ins>: Calculating a^n 
+3. <ins>AIM</ins>: Calculating a^n  
    <ins>WORKING</ins>:  
    The function power(a, n) calculates a^n efficiently using divide and conquer:
 
@@ -76,7 +76,7 @@
 ---
 ---  
 
-4. <ins>AIM</ins>: Calculate the similarity between two text documents (cosine similarity)
+4. <ins>AIM</ins>: Calculate the similarity between two text documents (cosine similarity)  
    <ins>WORKING</ins>:
    The function power(a, n) calculates a^n efficiently using divide and conquer:
 
