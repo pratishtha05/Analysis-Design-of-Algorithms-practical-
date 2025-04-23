@@ -1,0 +1,249 @@
+// 0/1 Knapsack
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int knapsack(int W, vector<int>& wt, vector<int>& val, int n) {
+    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+
+    for (int i = 1; i <= n; i++) {
+        for (int w = 0; w <= W; w++) {
+            if (wt[i - 1] <= w) 
+                dp[i][w] = max(dp[i - 1][w], val[i - 1] + dp[i - 1][w - wt[i - 1]]);
+            else 
+                dp[i][w] = dp[i - 1][w];
+        }
+    }
+
+    return dp[n][W];
+}
+
+int main() {
+    int n, W;
+    cout << "Enter number of items: ";
+    cin >> n;
+    vector<int> wt(n), val(n);
+
+    cout << "Enter weights of items: ";
+    for (int i = 0; i < n; i++) cin >> wt[i];
+
+    cout << "Enter values of items: ";
+    for (int i = 0; i < n; i++) cin >> val[i];
+
+    cout << "Enter knapsack capacity: ";
+    cin >> W;
+
+    cout << "Maximum profit: " << knapsack(W, wt, val, n) << endl;
+    return 0;
+}
+
+
+
+
+//All pairs shortest path
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+void shortestPath(vector<vector<int>>& A, int n) {
+    for (int k = 0; k < n; k++) {           
+        for (int i = 0; i < n; i++) {       
+            for (int j = 0; j < n; j++) {   
+                if (A[i][k] != INT_MAX && A[k][j] != INT_MAX) 
+                    A[i][j] = min(A[i][j], A[i][k] + A[k][j]);
+            }
+        }
+    }
+
+    cout << "All-Pairs Shortest Path Matrix:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (A[i][j] == INT_MAX)
+                cout << "INF ";
+            else
+                cout << A[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of vertices: ";
+    cin >> n;
+
+    vector<vector<int>> A(n, vector<int>(n));
+
+    cout << "Enter the adjacency matrix (use a large value like 99999 for no direct edge):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> A[i][j];
+            if (i != j && A[i][j] == 0)  
+                A[i][j] = INT_MAX;
+        }
+    }
+
+    shortestPath(A, n);
+    return 0;
+}
+
+
+
+
+//LCS
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+int lcs(string A, string B) {
+    int n = A.size(), m = B.size();
+    vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m; ++j)
+            if (A[i-1] == B[j-1])
+                dp[i][j] = 1 + dp[i-1][j-1];
+            else
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+
+    return dp[n][m];
+}
+
+int main() {
+    string A = "abcde", B = "ace";
+    cout << "LCS length: " << lcs(A, B) << endl;
+    return 0;
+}
+
+
+
+//MCM
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+int matrixChainMultiplication(vector<int>& dims) {
+    int n = dims.size() - 1;
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+
+    for (int len = 2; len <= n; ++len) {
+        for (int i = 0; i <= n - len; ++i) {
+            int j = i + len - 1;
+            dp[i][j] = INT_MAX;
+            for (int k = i; k < j; ++k) {
+                int cost = dp[i][k] + dp[k+1][j] + dims[i]*dims[k+1]*dims[j+1];
+                dp[i][j] = min(dp[i][j], cost);
+            }
+        }
+    }
+    return dp[0][n-1];
+}
+
+int main() {
+    vector<int> dims = {40, 20, 30, 10, 30}; 
+    cout << "Minimum multiplication cost: " << matrixChainMultiplication(dims) << endl;
+    return 0;
+}
+
+
+
+
+//Multistage graph 
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+void multistageGraph(int n, int stages, vector<vector<int>>& c) {
+    vector<int> cost(n, 0), d(n, 0), path(stages + 1, 0);
+
+    for (int i = n - 2; i >= 0; i--) {
+        int minCost = INT_MAX;
+        for (int k = i + 1; k < n; k++) {
+            if (c[i][k] != 0 && c[i][k] + cost[k] < minCost) {
+                minCost = c[i][k] + cost[k];
+                d[i] = k;
+            }
+        }
+        cost[i] = minCost;
+    }
+
+    path[1] = 0, path[stages] = n - 1;
+    for (int i = 2; i <= stages; i++)
+        path[i] = d[path[i - 1]];
+
+    cout << "Minimum cost: " << cost[0] << endl;
+    cout << "Optimal Path: ";
+    for (int i = 1; i <= stages; i++)
+        cout << path[i] + 1 << " ";  
+    cout << endl;
+}
+
+int main() {
+    int n, stages;
+    cout << "Enter number of vertices: ";
+    cin >> n;
+    cout << "Enter number of stages: ";
+    cin >> stages;
+
+    vector<vector<int>> c(n, vector<int>(n, 0));
+
+    cout << "Enter the adjacency matrix (enter 0 for no direct edge):\n";
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            cin >> c[i][j];
+
+    multistageGraph(n, stages, c);
+    return 0;
+}
+
+
+
+
+//TSP
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+#define INF INT_MAX
+
+int main() {
+    int n;
+    cout << "Enter number of vertices: ";
+    cin >> n;
+
+    vector<vector<int>> cost(n, vector<int>(n));
+    cout << "Enter cost matrix:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> cost[i][j];
+        }
+    }
+
+    vector<vector<int>> dp(n + 1, vector<int>(n, INF));
+    
+    dp[1][0] = 0;
+
+    for (int k = 2; k <= n; k++) { 
+        for (int j = 0; j < n; j++) { 
+            for (int i = 0; i < n; i++) { 
+                if (i != j && dp[k-1][i] != INF) {
+                    dp[k][j] = min(dp[k][j], dp[k-1][i] + cost[i][j]);
+                }
+            }
+        }
+    }
+
+    int minCost = INF;
+    for (int j = 1; j < n; j++) {
+        minCost = min(minCost, dp[n][j] + cost[j][0]);
+    }
+
+    cout << "Minimum cost of TSP: " << minCost << endl;
+    return 0;
+}
