@@ -1,0 +1,98 @@
+//Kruskals Algo
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+struct Edge {
+    int src, dest, weight;
+};
+
+int findParent(int v, vector<int>& parent) {
+    return (parent[v] == -1) ? v : findParent(parent[v], parent);
+}
+
+void unionSets(int u, int v, vector<int>& parent) {
+    parent[findParent(u, parent)] = findParent(v, parent);
+}
+
+int kruskalMST(int n, vector<Edge>& edges) {
+    sort(edges.begin(), edges.end(), [](Edge a, Edge b) { return a.weight < b.weight; });
+
+    vector<int> parent(n, -1);
+    int minCost = 0, count = 0;
+
+    for (Edge e : edges) {
+        if (findParent(e.src, parent) != findParent(e.dest, parent)) {
+            minCost += e.weight;
+            unionSets(e.src, e.dest, parent);
+            if (++count == n - 1) break;
+        }
+    }
+
+    return (count == n - 1) ? minCost : -1;
+}
+
+int main() {
+    int n = 4;
+    vector<Edge> edges = {{0, 1, 10}, {0, 2, 6}, {0, 3, 5}, {1, 3, 15}, {2, 3, 4}};
+
+    int cost = kruskalMST(n, edges);
+    cout << (cost == -1 ? "No spanning tree" : "Minimum Cost: " + to_string(cost)) << endl;
+
+    return 0;
+}
+
+
+//Prims Algo
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+const int N = 100;
+int cost[N][N], near[N], t[N][2], n;
+
+void prim() {
+    int mincost = 0, k = 0, l = 0;
+    
+    for (int i = 0; i < n; i++) 
+        for (int j = 0; j < n; j++) 
+            if (cost[i][j] < cost[k][l]) k = i, l = j;
+    
+    t[0][0] = k, t[0][1] = l, mincost += cost[k][l];
+    
+    for (int i = 0; i < n; i++) 
+        near[i] = (cost[i][k] < cost[i][l]) ? k : l;
+    
+    near[k] = near[l] = -1;
+    
+    for (int i = 1; i < n - 1; i++) {
+        int j = -1, minEdge = INT_MAX;
+        
+        for (int m = 0; m < n; m++) 
+            if (near[m] != -1 && cost[m][near[m]] < minEdge) 
+                j = m, minEdge = cost[m][near[m]];
+        
+        t[i][0] = j, t[i][1] = near[j], mincost += cost[j][near[j]];
+        near[j] = -1;
+        
+        for (int m = 0; m < n; m++) 
+            if (near[m] != -1 && cost[m][near[m]] > cost[m][j]) 
+                near[m] = j;
+    }
+    cout << "Minimum Cost: " << mincost << endl;
+}
+
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            cin >> cost[i][j];
+    
+    prim();
+    return 0;
+}
